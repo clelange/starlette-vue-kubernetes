@@ -60,3 +60,43 @@ pip freeze > requirements.txt
 ```
 
 All this should be added to version control.
+
+
+## Getting started with VueJS
+
+We will roughly follow the instructions for [Developing a Single Page App with Flask and Vue.js](https://testdriven.io/blog/developing-a-single-page-app-with-flask-and-vuejs/) for this purpose. In case you do not yet have Node.js, you can [download it](https://nodejs.org/en/) or install it via [Homebrew](https://brew.sh/).
+You might already have the vue-cli installed, so to make sure you use a recent version, update all globally installed packages by running `npm update -g`.
+
+To install `vue-cli`, run the following as outlined in the corresponding [installation instructions](https://cli.vuejs.org/guide/installation.html):
+
+```shell
+npm install -g @vue/cli
+npm install -g @vue/cli-init
+```
+
+Now change to the `services` directory in the project directory, e.g. as above `starlette-vue-kubernetes` and run the following command to initialise a new Vue project called `client` with the [webpack](https://github.com/vuejs-templates/webpack) config:
+
+```shell
+vue init webpack client
+```
+
+This will ask a couple of questions. Keep `client` as project name, feel free to change the description and author to your wanting. Then choose the following:
+
+1. Vue build: ` Runtime + Compiler` (default)
+1. Install vue-router?:  `Yes` (default)
+1. Use ESLint to lint your code?:  `Yes` (default)
+1. Pick an ESLint preset: ` Airbnb`
+1. Set up unit tests:  `No`
+1. Setup e2e tests with Nightwatch:  `No`
+1. Should we run npm install for you after the project has been created: `Yes, use NPM` (default)
+
+This will install a lot of things. To see if things worked, run:
+
+```shell
+cd client
+npm run dev
+```
+
+The application should then be running at [http://localhost:8081](http://localhost:8081).
+
+This concludes the installation of VueJS, now add the client directory to version control.
