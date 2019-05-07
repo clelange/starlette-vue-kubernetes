@@ -100,3 +100,79 @@ npm run dev
 The application should then be running at [http://localhost:8081](http://localhost:8081).
 
 This concludes the installation of VueJS, now add the client directory to version control.
+
+## Communicating from frontend to backend
+
+The next step is to enable the two VueJS frontend to receive information from/query the Starlette backend.
+
+Strip down `<template>` section of `client/src/components/HelloWorld.vue` to only look like this:
+
+```html
+<template>
+  <div class="hello">
+    <h1>{{ msg }}</h1>
+  </div>
+</template>
+```
+
+Also, have a look at the remainder of the file. You will see that the message on the webpage when running `npm run dev` and pointing your browser to [http://localhost:8080](http://localhost:8080) is the message (`msg`) defined in the `<script>` section. In order to be able to communicate with the backend, we will now use the [axios](https://github.com/axios/axios) library:
+
+```shell
+npm install axios
+```
+
+Now we can attempt to make a call to our backend by extending the `<script>` section of `HelloWorld.vue` as follows:
+
+```javascript
+<script>
+import axios from 'axios';
+
+export default {
+  name: 'HelloWorld',
+  data() {
+    return {
+      msg: 'Welcome to Your Vue.js App',
+    };
+  },
+  methods: {
+    getMessage() {
+      const path = 'http://localhost:8000/';
+      axios.get(path)
+        .then((res) => {
+          this.msg = `Hello, ${res.data.hello}!`;
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
+  },
+  created() {
+    this.getMessage();
+  },
+};
+</script>
+```
+
+Start the Starlette server in a new terminal window via `python example.py` and refresh your frontend webpage. Unfortunately, nothing will happen. To figure out why this is so, open the Developer Console of your browser. You will see a message like this:
+
+`Access to XMLHttpRequest at 'http://localhost:8000/' from origin 'http://localhost:8080' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.`
+
+The CORS, which means Cross-Origin Resource Sharing, policy of the backend webserver does not allow requests from a different host for security reasons. This can be changed easily by following the instructions listed in the [CORSMiddleware](https://www.starlette.io/middleware/#corsmiddleware) documentation. Under [this link](https://medium.com/@xinganwang/a-practical-guide-to-cors-51e8fd329a1f) you can find more general information on CORS with some more examples.
+
+Adjust the `example.py` file by adding a line at the top:
+
+```python
+from starlette.middleware.cors import CORSMiddleware
+```
+
+and below the line creating the `App`, add the following:
+
+```python
+# A list of origins that should be permitted to make cross-origin requests
+app.add_middleware(CORSMiddleware,
+    allow_origins=['http://localhost:8080'],
+)
+```
+
+Since we know exactly where the request is coming from, we can explicitly list it in the configuration. Restart the webserver and you will see that the "Welcome to Your Vue.js App" message changes to "Hello, world!". We have established communication between frontend and backend!
